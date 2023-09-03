@@ -6,10 +6,31 @@ import styles from "./LineChart.module.css";
 function LineChart() {
   const [select, setSelect] = useState("ethereum");
   const [data, setData] = useState([]);
-  const [toggle, setToggle] = useState(false);
+  const [toggleTable, setToggleTable] = useState(false);
+  const [xValue, setXValue] = useState("time");
+  const [yValue, setYValue] = useState("value");
+  const [xName, setXName] = useState("Time");
+  const [yName, setYName] = useState("Price");
 
-  const handleToggle = () => {
-    setToggle(!toggle);
+
+
+
+
+
+  const handleToggleTable = () => {
+    setToggleTable(!toggleTable);
+    if (toggleTable === true) {
+      setXValue("time");
+      setYValue("value");    
+      setXName("Time");
+      setYName("Price");    
+     }
+    else{
+      setXValue("value");
+      setYValue("time");  
+      setXName("Price");
+      setYName("Time"); 
+    }
   };
 
   useEffect(() => {
@@ -23,23 +44,20 @@ function LineChart() {
       );
       setData(response.data.prices);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error:", error);
     }
   };
 const chartDispaly = () => {
  // console.log(data);
- var check;
- if (toggle == true) {
-   check = "light";
- }
-else{
- check = "dark";
-}
+
+
  const chart = echarts.init(
    document.getElementById("line-chart"),
-   `${check}`
+   "dark"
  );
- console.log(check);
+ console.log(xValue, yValue);
+
+
  const option = {
    title: {
      text: `Price Chart for ${select}`,
@@ -48,10 +66,12 @@ else{
      trigger: "axis",
    },
    xAxis: {
-     type: "time",
+     type: xValue,
+     name : xName
    },
    yAxis: {
-     type: "value",
+     type: yValue,
+     name : yName
    },
    series: [
      {
@@ -71,7 +91,7 @@ else{
   useEffect(() => {
    
    chartDispaly()
-  }, [select, data, toggle]);
+  }, [select, data,toggleTable,xValue, yValue]);
 
   return (
     <div className={styles.chartcontainer}>
@@ -86,7 +106,10 @@ else{
           <option value="bitcoin">Bitcoin</option>
         </select>
     </div>
-        <button onClick={handleToggle}>Toggle table Theme</button>
+<div>
+        <button onClick={handleToggleTable}>Toggle Table</button>
+</div>
+
       </div>
 
       <div id="line-chart" style={{ width: "100%", height: "400px" }}></div>
